@@ -101,30 +101,18 @@ router.patch("/:id", (req, res) => {
     });
 });
 router.patch("/:id/like", async (req, res) => {
-  var blog;
-  await Blog.findOne({ _id: req.params.id })
-    .then((result) => {
-      let findIndex = result.likes.findIndex((e) => e.equals(req.body._id));
-      findIndex > -1
-        ? result.likes.splice(findIndex, 1)
-        : result.likes.push(req.body);
-      blog = result;
-    })
-    .catch((err) =>
-      res.status(500).json({
-        msg: "Internal Server Error!",
-      })
-    );
+  const blog = await Blog.findOne({ _id: req.params.id }).populate("createdBy", { name: 1, email: 2 })
 
-  Blog.updateOne({ _id: req.params.id }, blog)
-    .then(async (result) => {
-      const getBlog = await Blog.findById({ _id: req.params.id }).populate(
-        "createdBy",
-        { name: 1, email: 2 }
-      );
+  let findIndex = blog.likes.findIndex((e) => e.equals(req.body._id));
+  findIndex > -1
+    ? blog.likes.splice(findIndex, 1)
+    : blog.likes.push(req.body);
+
+  Blog.updateOne({ _id: req.params.id }, { likes: blog.likes })
+    .then((result) => {
       res.status(201).json({
         msg: "Blog Liked Successfully!",
-        data: getBlog,
+        data: blog,
       });
     })
     .catch((err) => {
