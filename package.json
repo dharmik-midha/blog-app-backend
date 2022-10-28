@@ -16,5 +16,9 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.7.0",
     "mongoose-unique-validator": "^3.1.0"
+  },
+  "engines":{
+    "node":"16.x",
+    "npm":"8.11.0"
   }
 }
